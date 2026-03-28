@@ -214,6 +214,8 @@ CLEAR_TO_END = "\x1b[K"
 SHOW_CURSOR = "\x1b[?25h"
 ENABLE_MOUSE = "\x1b[?1000h\x1b[?1002h\x1b[?1006h"
 DISABLE_MOUSE = "\x1b[?1000l\x1b[?1002l\x1b[?1006l"
+ENABLE_KITTY_KEYBOARD = "\x1b[>1u"
+DISABLE_KITTY_KEYBOARD = "\x1b[<u"
 MAX_RETURNED_RESULTS = 100
 FIXED_MATCH_TEXT_WIDTH = 3000
 RESULT_PREFIX_WIDTH = 2
@@ -285,6 +287,11 @@ def normalize_shell_command(text: str) -> str:
     cleaned = text.replace("\r\n", "\n").replace("\r", "\n").replace("\x00", "")
     cleaned = cleaned.replace("\\\n", "")
     return cleaned.strip("\n")
+
+
+def supports_kitty_keyboard_protocol() -> bool:
+    term = os.environ.get("TERM", "")
+    return bool(os.environ.get("KITTY_WINDOW_ID")) or "kitty" in term.lower()
 
 
 class RawTerminal:
@@ -2021,6 +2028,7 @@ def read_key(fd: int, timeout: Optional[float] = 0.1) -> tuple[str, object]:
             shift = (mod - 1) & 1
             ctrl = (mod - 1) & 4
             alt = (mod - 1) & 2
+            super_key = (mod - 1) & 8
 
             if codepoint == 13:
                 return "enter", None
@@ -2048,9 +2056,9 @@ def read_key(fd: int, timeout: Optional[float] = 0.1) -> tuple[str, object]:
                 return "word_right", None
             if codepoint in (65, 97) and alt:
                 return "select_all", None
-            if codepoint in (67, 99) and alt:
+            if codepoint in (67, 99) and (alt or super_key):
                 return "copy", None
-            if codepoint in (86, 118) and alt:
+            if codepoint in (86, 118) and (alt or super_key):
                 return "paste", None
             if 32 <= codepoint < 127:
                 return "char", chr(codepoint)
@@ -2404,6 +2412,8 @@ def run(
             displayed_total_count = initial_total_count
             mouse_selecting = False
             mouse_enabled = False
+            kitty_keyboard_enabled = False
+            kitty_keyboard_supported = supports_kitty_keyboard_protocol()
             last_left_click_time = 0.0
             last_left_click_row = -1
             last_left_click_col = -1
@@ -2568,6 +2578,14 @@ def run(
                 term_flush()
 
             def clear_panel_and_restore_cursor() -> None:
+                nonlocal mouse_enabled, mouse_selecting, kitty_keyboard_enabled
+                if kitty_keyboard_enabled:
+                    term_write(DISABLE_KITTY_KEYBOARD)
+                    kitty_keyboard_enabled = False
+                if mouse_enabled:
+                    term_write(DISABLE_MOUSE)
+                    mouse_enabled = False
+                    mouse_selecting = False
                 # Clear panel content so repeated invocations always start clean.
                 for row in range(anchor_row, anchor_row + max(panel_rows, last_drawn_panel_rows)):
                     term_write(move_to(row, panel_clear_col(row, anchor_row, anchor_col)) + CLEAR_TO_END)
@@ -2596,14 +2614,20 @@ def run(
                 clear_selection()
 
             def sync_mouse_mode() -> None:
-                nonlocal mouse_enabled, mouse_selecting
+                nonlocal mouse_enabled, mouse_selecting, kitty_keyboard_enabled
                 should_enable = len(query) > 0
                 if should_enable and not mouse_enabled:
                     term_write(ENABLE_MOUSE)
+                    if kitty_keyboard_supported and not kitty_keyboard_enabled:
+                        term_write(ENABLE_KITTY_KEYBOARD)
+                        kitty_keyboard_enabled = True
                     term_flush()
                     mouse_enabled = True
                 elif not should_enable and mouse_enabled:
                     term_write(DISABLE_MOUSE)
+                    if kitty_keyboard_enabled:
+                        term_write(DISABLE_KITTY_KEYBOARD)
+                        kitty_keyboard_enabled = False
                     term_flush()
                     mouse_enabled = False
                     mouse_selecting = False

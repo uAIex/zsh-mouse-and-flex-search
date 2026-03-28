@@ -45,4 +45,5 @@ A modernized terminal UI for searching zsh history with Emacs-style `flex` fuzzy
 - `PageUp` / `PageDown`: move faster
 - `Backspace`: delete query char
 - `Enter`: print and optionally runs the selected command
+- `Cmd-C` / `Cmd-V`: copy/paste query text in kitty while mouse takeover is active
 - `Esc` or `Ctrl-C`: quit
