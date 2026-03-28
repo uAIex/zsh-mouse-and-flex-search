@@ -533,9 +533,14 @@ def load_custom_history_rows(path: Path, *, limit: Optional[int] = None) -> list
     return entries
 
 
-def load_custom_history(path: Path, *, existing_history: Optional[list[HistoryEntry]] = None) -> list[HistoryEntry]:
+def load_custom_history(
+    path: Path,
+    *,
+    existing_history: Optional[list[HistoryEntry]] = None,
+    limit: Optional[int] = None,
+) -> list[HistoryEntry]:
     if not existing_history:
-        return load_custom_history_rows(path)
+        return load_custom_history_rows(path, limit=limit)
 
     recent_entries = load_custom_history_rows(path, limit=10)
     if not recent_entries:
@@ -573,9 +578,10 @@ def load_history_source(
     *,
     use_custom_history: bool,
     existing_history: Optional[list[HistoryEntry]] = None,
+    history_length: Optional[int] = None,
 ) -> list[HistoryEntry]:
     if use_custom_history:
-        return load_custom_history(path, existing_history=existing_history)
+        return load_custom_history(path, existing_history=existing_history, limit=history_length)
     return load_history(path)
 
 
@@ -599,30 +605,6 @@ def append_custom_history_entry(path: Path, command: str, cwd: str, timestamp: s
     except (OSError, sqlite3.Error):
         return False
     return True
-
-
-def trim_custom_history(path: Path, max_entries: int) -> None:
-    if max_entries <= 0:
-        return
-    ensure_custom_history_file(path)
-    with sqlite3.connect(path) as conn:
-        row = conn.execute("SELECT COUNT(*) FROM custom_history").fetchone()
-        total_entries = row[0] if isinstance(row, tuple) and row and isinstance(row[0], int) else 0
-        if total_entries <= max_entries:
-            return
-        conn.execute(
-            """
-            DELETE FROM custom_history
-            WHERE id NOT IN (
-                SELECT id
-                FROM custom_history
-                ORDER BY id DESC
-                LIMIT ?
-            )
-            """,
-            (max_entries,),
-        )
-        conn.commit()
 
 
 def spawn_history_loader(path: Path) -> queue.Queue[tuple[str, object]]:
@@ -1490,14 +1472,14 @@ def run_history_daemon(
     if use_custom_history:
         try:
             ensure_custom_history_file(history_path)
-            trim_custom_history(history_path, history_length)
         except OSError as exc:
             print(f"zsh_flex_history daemon: failed to initialize custom history: {exc}", file=sys.stderr)
             return 1
-        except sqlite3.Error as exc:
-            print(f"zsh_flex_history daemon: failed to trim custom history: {exc}", file=sys.stderr)
-            return 1
-    history = load_history_source(history_path, use_custom_history=use_custom_history)
+    history = load_history_source(
+        history_path,
+        use_custom_history=use_custom_history,
+        history_length=history_length if use_custom_history else None,
+    )
     signature = history_file_signature(history_path)
 
     try:
@@ -3137,7 +3119,7 @@ def main() -> int:
     parser.add_argument(
         "--history-length",
         default="10k",
-        help="Maximum SQLite history rows to keep when the daemon starts (for example: 10000 or 10k).",
+        help="Maximum SQLite history rows to load on initial custom-history startup (for example: 10000 or 10k).",
     )
     parser.add_argument(
         "--no-shared-daemon",

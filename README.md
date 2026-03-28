@@ -28,10 +28,10 @@ A modernized terminal UI for searching zsh history with Emacs-style `flex` fuzzy
   - Stores commands as UTF-8 text by default, unlike zsh
   - Includes extra metadata per entry (`command`, `cwd`, `timestamp`).
 - `--history-length <N>`
-  - Maximum number of SQLite history rows to keep when the daemon starts (default: `10k`).
+  - Maximum number of SQLite history rows to load on the daemon's initial startup from `history.db` (default: `10k`).
   - Accepts values like `10000` or `10k`.
-  - Applies only to `--use-custom-history` and only when a daemon instance is starting; normal `~/.zsh_history` is not trimmed.
-  - Existing daemon processes keep their current DB until restarted (new trim happens only on next startup).
+  - Applies only to `--use-custom-history` and only on the daemon's first load; normal `~/.zsh_history` is not trimmed.
+  - Does not delete rows from the SQLite file. Later daemon refreshes load normally without this cap.
 - `--print-only`
   - Prints the selected command to stdout instead of executing it.
 
