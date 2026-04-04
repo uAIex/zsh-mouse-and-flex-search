@@ -16,12 +16,6 @@ Optionally, to import your existing Zsh history into the custom SQLite history d
 
 `zsh-flex-history-import`
 
-## Manual Setup
-
-```bash
-uv run zsh-flex-history --use-custom-history --print-only
-```
-
 ## Behavior
 
 - Uses in-order flexible fuzzy matching (similar to Emacs `flex`).
