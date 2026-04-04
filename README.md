@@ -5,7 +5,7 @@
 A modernized terminal UI for searching zsh history with Emacs-style `flex` fuzzy matching, full mouse support for setting point and related interactions, and syntax highlighting. It works in other shells too when invoked directly.
 
 
-## uv Install and Setup
+## Install and Setup
 
 ```bash
 uv tool install git+https://github.com/uAlexk/zsh-mouse-and-flex-search
