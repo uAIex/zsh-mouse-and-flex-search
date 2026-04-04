@@ -468,8 +468,17 @@ def dedupe_history_entries_preserving_order(entries: list[HistoryEntry]) -> list
     return deduped
 
 
+def default_app_state_dir() -> Path:
+    xdg_state_home = os.environ.get("XDG_STATE_HOME", "").strip()
+    if xdg_state_home:
+        return Path(xdg_state_home).expanduser() / "zsh-flex-history"
+    if sys.platform == "darwin":
+        return Path.home() / "Library" / "Application Support" / "zsh-flex-history"
+    return Path.home() / ".local" / "state" / "zsh-flex-history"
+
+
 def default_custom_history_path() -> Path:
-    return Path(__file__).resolve().parent / "history.db"
+    return default_app_state_dir() / "history.db"
 
 
 def parse_history_length_arg(raw: str) -> int:
@@ -3158,7 +3167,7 @@ def main() -> int:
     parser.add_argument(
         "--use-custom-history",
         action="store_true",
-        help="Use local SQLite history at ./history.db (command, cwd, timestamp).",
+        help="Use per-user SQLite history (command, cwd, timestamp).",
     )
     args = parser.parse_args()
     try:

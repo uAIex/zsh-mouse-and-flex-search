@@ -52,11 +52,11 @@ That sourced file will call the installed `zsh-flex-history` binary automaticall
 
 
 - `--use-custom-history`
-  - Uses an alternate history backend at `history.db` (SQLite) in this project directory.
+  - Uses an alternate per-user SQLite history backend.
   - Stores commands as UTF-8 text by default, unlike zsh
   - Includes extra metadata per entry (`command`, `cwd`, `timestamp`).
 - `--history-length <N>`
-  - Maximum number of SQLite history rows to load on the daemon's initial startup from `history.db` (default: `10k`).
+  - Maximum number of SQLite history rows to load on the daemon's initial startup from the custom history DB (default: `10k`).
   - Accepts values like `10000` or `10k`.
   - Applies only to `--use-custom-history` and only on the daemon's first load; normal `~/.zsh_history` is not trimmed.
   - Does not delete rows from the SQLite file. Later daemon refreshes load normally without this cap.

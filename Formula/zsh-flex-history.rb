@@ -10,17 +10,17 @@ class ZshFlexHistory < Formula
   def install
     libexec.install "zsh_flex_history.py"
     libexec.install "zsh_syntax_highlighting.py"
-    libexec.install "esc_mode.py"
     libexec.install "convert_zsh_history_to_db.py"
+    libexec.install "esc_mode.py" if File.exist?("esc_mode.py")
     libexec.install "cmd.sh" if File.exist?("cmd.sh")
 
     (bin/"zsh-flex-history").write <<~EOS
       #!/bin/bash
-      exec "#{Formula["python@3.12"].opt_bin}/python3" "#{libexec}/zsh_flex_history.py" "$@"
+      exec "#{Formula["python@3.12"].opt_bin}/python3.12" "#{libexec}/zsh_flex_history.py" "$@"
     EOS
     (bin/"zsh-flex-history-import").write <<~EOS
       #!/bin/bash
-      exec "#{Formula["python@3.12"].opt_bin}/python3" "#{libexec}/convert_zsh_history_to_db.py" "$@"
+      exec "#{Formula["python@3.12"].opt_bin}/python3.12" "#{libexec}/convert_zsh_history_to_db.py" "$@"
     EOS
     chmod 0755, bin/"zsh-flex-history"
     chmod 0755, bin/"zsh-flex-history-import"
