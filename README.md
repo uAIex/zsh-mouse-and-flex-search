@@ -2,15 +2,14 @@
 
 ![zsh flex history screenshot](./screenshot.png)
 
-A modernized terminal UI for searching zsh history with Emacs-style `flex` fuzzy matching, full mouse support for setting point and related interactions, and syntax highlighting; in `.zshrc`, wire it via a `zle-line-init` hook (see zshrc file for how to exit the program and execute the command). It works in other shells too when invoked directly.
+A modernized terminal UI for searching zsh history with Emacs-style `flex` fuzzy matching, full mouse support for setting point and related interactions, and syntax highlighting. It works in other shells too when invoked directly.
 
 
-## Homebrew Install and Setup
+## uv Install and Setup
 
 ```bash
-brew tap uAlexk/tools
-brew install --HEAD zsh-flex-history
-echo 'source "$(brew --prefix)/share/zsh-flex-history/zsh-flex-history.zsh"' >> "${ZDOTDIR:-$HOME}/.zshrc"
+uv tool install git+https://github.com/uAlexk/zsh-mouse-and-flex-search
+zsh-flex-history-init-zsh >> "${ZDOTDIR:-$HOME}/.zshrc"
 ```
 
 Optionally, to import your existing Zsh history into the custom SQLite history database, run:
@@ -20,10 +19,8 @@ Optionally, to import your existing Zsh history into the custom SQLite history d
 ## Manual Setup
 
 ```bash
-./zsh_flex_history.py --use-custom-history --print-only
+uv run zsh-flex-history --use-custom-history --print-only
 ```
-
-See zshrc file for how to modify your zshrc to auto run.
 
 ## Behavior
 

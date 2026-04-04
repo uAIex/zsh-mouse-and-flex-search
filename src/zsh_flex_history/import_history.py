@@ -18,8 +18,17 @@ def default_input_history_path() -> Path:
     return Path(os.environ.get("HISTFILE", str(Path.home() / ".zsh_history"))).expanduser()
 
 
+def default_app_state_dir() -> Path:
+    xdg_state_home = os.environ.get("XDG_STATE_HOME", "").strip()
+    if xdg_state_home:
+        return Path(xdg_state_home).expanduser() / "zsh-flex-history"
+    if os.uname().sysname == "Darwin":
+        return Path.home() / "Library" / "Application Support" / "zsh-flex-history"
+    return Path.home() / ".local" / "state" / "zsh-flex-history"
+
+
 def default_output_db_path() -> Path:
-    return Path(__file__).resolve().parent / "history.db"
+    return default_app_state_dir() / "history.db"
 
 
 def ensure_schema(conn: sqlite3.Connection) -> None:

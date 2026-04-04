@@ -26,7 +26,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, List, Optional
 
-from zsh_syntax_highlighting import ansi_for_token, highlight_tokens
+from .syntax_highlighting import ansi_for_token, highlight_tokens
 
 
 BASE16_TO_ANSI = {
