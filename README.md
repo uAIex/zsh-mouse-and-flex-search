@@ -15,8 +15,7 @@ echo 'source "$(brew --prefix)/share/zsh-flex-history/zsh-flex-history.zsh"' >> 
 
 Optionally, to import your existing Zsh history into the custom SQLite history database, run:
 
-```bash
-zsh-flex-history-import
+`zsh-flex-history-import`
 
 ## Manual Setup
 
