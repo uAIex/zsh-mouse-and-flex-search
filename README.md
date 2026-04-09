@@ -8,7 +8,7 @@ A modernized terminal UI for searching zsh history with Emacs-style `flex` fuzzy
 ## Install and Setup
 
 ```bash
-uv tool install git+https://github.com/uAlexk/zsh-mouse-and-flex-search
+uv tool install git+https://github.com/uAIex/zsh-mouse-and-flex-search
 zsh-flex-history-init-zsh >> "${ZDOTDIR:-$HOME}/.zshrc"
 ```
 
