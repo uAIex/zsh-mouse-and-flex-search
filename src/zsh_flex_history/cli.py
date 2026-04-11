@@ -219,7 +219,7 @@ DISABLE_KITTY_KEYBOARD = "\x1b[<u"
 MAX_RETURNED_RESULTS = 100
 FIXED_MATCH_TEXT_WIDTH = 3000
 RESULT_PREFIX_WIDTH = 2
-SELECTOR_GLYPH = "▶"
+SELECTOR_GLYPH = "*"
 
 TERM_OUT = sys.stdout
 
@@ -1806,10 +1806,11 @@ def render_result_line(
             match_style = style(fg=1, underline=True)
 
     selector_style = style(fg=2, bold=True) if item.runtime_completion else style(fg=1, bold=True)
+    selector = selector_glyph[:1] or SELECTOR_GLYPH
     if selected:
-        gutter = f"{selector_style}{selector_glyph[:1] or SELECTOR_GLYPH}{RESET} "
+        gutter = f"{selector_style}{selector}{RESET} "
     else:
-        gutter = "  "
+        gutter = f"{RESET}{selector} "
 
     out: list[str] = []
     active_style = ""
@@ -1941,7 +1942,7 @@ def draw_panel(
             query=query,
             unselected_white=True,
             suffix_text="",
-            selector_glyph="▷" if idx == selected and idx == (len(results) - 1) else SELECTOR_GLYPH,
+            selector_glyph=SELECTOR_GLYPH,
         )
         result_lines.append(base_line)
 
