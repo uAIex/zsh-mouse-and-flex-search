@@ -2803,10 +2803,7 @@ def run(
                         clear_panel_and_restore_cursor()
                         return None
                     if ev == "enter":
-                        if not query and 0 <= selected < len(results):
-                            chosen = results[selected].text
-                        else:
-                            chosen = query
+                        chosen = query
                         break
                     if ev == "tab":
                         if not query:
