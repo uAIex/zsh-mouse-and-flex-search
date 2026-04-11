@@ -2964,6 +2964,8 @@ def run(
                         pasted = normalize_pasted_text(read_clipboard())
                         if not pasted:
                             continue
+                        if not query:
+                            refresh_anchor_from_cursor()
                         sel = selection_bounds(sel_anchor, sel_end)
                         if sel:
                             query = query[: sel[0]] + pasted + query[sel[1] :]
@@ -2980,6 +2982,8 @@ def run(
                         pasted = normalize_pasted_text(str(payload))
                         if not pasted:
                             continue
+                        if not query:
+                            refresh_anchor_from_cursor()
                         sel = selection_bounds(sel_anchor, sel_end)
                         if sel:
                             query = query[: sel[0]] + pasted + query[sel[1] :]
