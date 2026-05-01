@@ -962,7 +962,7 @@ def insert_runtime_completions(
     for index, item in enumerate(merged):
         if item.text in runtime_texts:
             merged[index] = replace(item, runtime_completion=True)
-    insertion_index = min(2, len(merged))
+    insertion_index = 0
     for runtime_completion in runtime_completions[:featured_count]:
         if any(item.text == runtime_completion.text for item in merged):
             continue
@@ -2745,7 +2745,7 @@ def run(
                         featured_count=runtime_limit,
                     )
                     if preferred_runtime_row is not None:
-                        runtime_row = min(preferred_runtime_row, 2)
+                        runtime_row = 0
                         if 0 <= runtime_row < len(results) and results[runtime_row].runtime_completion:
                             selected = runtime_row
                         preferred_runtime_row = None
@@ -2809,7 +2809,7 @@ def run(
                         if not query:
                             refresh_anchor_from_cursor()
                         if 0 <= selected < len(results):
-                            preferred_runtime_row = min(selected, 2) if results[selected].runtime_completion else None
+                            preferred_runtime_row = 0 if results[selected].runtime_completion else None
                             query = results[selected].text
                             cursor_pos = len(query)
                             clear_selection()
