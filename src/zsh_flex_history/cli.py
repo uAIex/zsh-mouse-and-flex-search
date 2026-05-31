@@ -1905,6 +1905,7 @@ def render_result_line(
         return ""
 
     result_color = ansi_color_from_env("ZSH_FLEX_HISTORY_COLOR", 1)
+    runtime_color = ansi_color_from_env("ZSH_FLEX_HISTORY_RUNTIME_COLOR", 2)
     gutter_width = RESULT_PREFIX_WIDTH
     suffix_width = text_display_width(suffix_text) + 4 if suffix_text else 0
     body_width = max(0, width - gutter_width - suffix_width)
@@ -1915,11 +1916,11 @@ def render_result_line(
 
     if item.runtime_completion:
         if selected:
-            normal_style = RESET + style(fg=2, bold=True)
-            match_style = RESET + style(fg=2, bold=True, underline=True)
+            normal_style = RESET + style(fg=runtime_color, bold=True)
+            match_style = RESET + style(fg=runtime_color, bold=True, underline=True)
         else:
-            normal_style = RESET + style(fg=2)
-            match_style = style(fg=2, underline=True)
+            normal_style = RESET + style(fg=runtime_color)
+            match_style = style(fg=runtime_color, underline=True)
     else:
         if selected:
             normal_style = RESET + style(fg=result_color, bold=True)
@@ -1931,7 +1932,7 @@ def render_result_line(
             match_style = style(fg=result_color, underline=True)
 
     if item.runtime_completion:
-        selector_style = style(fg=2, bold=True)
+        selector_style = style(fg=runtime_color, bold=True)
     else:
         selector_style = style(fg=result_color, bold=True)
     selector_source = FAILED_SELECTOR_GLYPH if item.failed else selector_glyph
