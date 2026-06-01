@@ -2670,7 +2670,7 @@ def run(
             search_thread = threading.Thread(target=search_worker, daemon=True)
             search_thread.start()
 
-            def refresh_anchor_from_cursor(*, trust_current_position: bool = False) -> None:
+            def refresh_anchor_from_cursor(*, trust_current_position: bool = False, trust_row_only: bool = False) -> None:
                 nonlocal start_row, start_col, anchor_row, anchor_col, panel_rows, last_drawn_panel_rows
                 nonlocal initial_cursor_row, initial_cursor_col
                 old_anchor_row = anchor_row
@@ -2686,7 +2686,7 @@ def run(
                     next_start_col = 1
                 elif trust_current_position or pos[0] == 1:
                     next_start_row = pos[0]
-                    next_start_col = pos[1]
+                    next_start_col = initial_cursor_col if trust_row_only else pos[1]
                     initial_cursor_row = next_start_row
                     initial_cursor_col = next_start_col
                 else:
@@ -2883,7 +2883,7 @@ def run(
                         if now >= resize_deadline:
                             resize_pending = False
                             resize_deadline = None
-                            refresh_anchor_from_cursor(trust_current_position=True)
+                            refresh_anchor_from_cursor(trust_current_position=True, trust_row_only=True)
                             continue
                         ev, payload = read_key(
                             fd,
