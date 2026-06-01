@@ -2,7 +2,7 @@
 
 ![zsh flex history screenshot](./screenshot.png)
 
-A modernized terminal UI for searching zsh history with Emacs-style `flex` fuzzy matching, full mouse support for setting point and related interactions, and syntax highlighting. It works in other shells too when invoked directly.
+Use the mouse to edit commands in your terminal just like regular text, drag and select, overwrite by typing. Automatically search zsh history with flexible priority fuzzy matching, and syntax highlighting. It works in other shells too when invoked directly.
 
 
 ## Install and Setup
